@@ -1,0 +1,11 @@
+.idea
+
+#환경 변수 파일들
+.env
+.env
+!.env
+!.env.*.example
+
+# OS 파일
+.DS_Store
+Thumbs.db
