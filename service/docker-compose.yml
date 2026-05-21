@@ -1,0 +1,52 @@
+x-common: &common
+  restart: unless-stopped
+  env_file:
+    - .env
+  networks:
+    - linclean-network
+  logging:
+    driver: "json-file"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  backend:
+    <<: *common
+    image: ${DOCKER_USERNAME}/devine-backend:${DOCKER_IMAGE_TAG:-latest}
+    container_name: linclean-spring
+    ports:
+      - "${API_PORT}:${API_PORT}"
+    environment:
+      - TZ=Asia/Seoul
+      - JAVA_OPTS=-Xmx512m -Xms256m -XX:+UseContainerSupport
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:${API_PORT}/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    volumes:
+      - ./logs/backend:/app/logs
+
+  ai:
+    <<: *common
+    image: ${DOCKER_USERNAME}/devine-ai:${DOCKER_IMAGE_TAG:-latest}
+    container_name: linclean-ai
+    ports:
+      - "${FAST_PORT}:${FAST_PORT}"
+    environment:
+      - TZ=Asia/Seoul
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${FAST_PORT}/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - ./logs/ai:/app/logs
+
+networks:
+  linclean-network:
+    driver: bridge
