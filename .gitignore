@@ -2,7 +2,8 @@
 
 #환경 변수 파일들
 .env
-.env.*
+db/.env
+service/.env
 !.env.example
 !.env.*.example
 
