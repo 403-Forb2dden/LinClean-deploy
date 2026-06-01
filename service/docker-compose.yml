@@ -39,14 +39,18 @@ services:
       - TZ=Asia/Seoul
       - PYTHONUNBUFFERED=1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${FAST_PORT}/health"]
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:${FAST_PORT}/api/v1/health').status==200 else 1)"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
     volumes:
       - ./logs/ai:/app/logs
+      - ai_data:/app/data
 
 networks:
   linclean-network:
     driver: bridge
+
+volumes:
+  ai_data:
