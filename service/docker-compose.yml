@@ -28,7 +28,7 @@ services:
       retries: 3
       start_period: 90s
     volumes:
-      - ./logs/backend:/app/logs
+      - linclean-logs:/app/logs
 
   ai:
     <<: *common
@@ -92,3 +92,4 @@ volumes:
   ai_data:
   certbot_certs:
   certbot_www:
+  linclean-logs:
